@@ -14,13 +14,13 @@ end_story   = '2023-12-31' # End   date for stock histories
 
 # Information on S&P500 stocks
 #DATA_URL = r"https://datahub.io/core/s-and-p-500-companies/datapackage.json"
-DATA_URL = r"https://pkgstore.datahub.io/core/s-and-p-500-companies-financials/3/datapackage.json"
+DATA_URL = r"https://pkgstore.datahub.io/core/s-and-p-500-companies/10/datapackage.json"
 package = datapackage.Package(DATA_URL)
 resources = package.resources
 
 
 # Only the data written in the table are of interest,
-# which contain: symbol, name and securities sector
+# which contain: symbol, name and sector
 for resource in resources:
     if resource.tabular:
         dataset = pd.read_csv(resource.descriptor['path'])
