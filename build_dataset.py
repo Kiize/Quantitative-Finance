@@ -55,5 +55,5 @@ for index, row in dataset.iterrows():
 np.save("data/dataset.npy", history)
 
 mins = (time.time()-start)//60
-sec = (time.time()-start) % 60
+sec  = (time.time()-start) % 60
 print(f"Elapsed time: {mins} min {sec:.2f} sec")
