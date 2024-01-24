@@ -71,6 +71,8 @@ for i, ticker in enumerate(index):
     retshuff[i, :] = np.random.choice(return1d[i, :], size=L, replace=False)
     sigma = np.sqrt(np.mean(retshuff[i, :]**2)-np.mean(retshuff[i, :])**2)
     rtnshuff[i, :] = (retshuff[i, :] - np.mean(retshuff[i, :]))/sigma
+    
+    print(f"{(i+1)/N * 100:.2f} % \r", end='')
 
 
 # Compute the cross correlation matrix
@@ -78,6 +80,8 @@ for i in range(N):
     for j in range(N):
         crosscor[i, j] = ut.corr(retunorm[i, :], retunorm[j, :])
         cscshuff[i, j] = ut.corr(rtnshuff[i, :], rtnshuff[j, :])
+    
+    print(f"{(i+1)/N * 100:.2f} % \r", end='')
 
 
 np.save("data/cross_correlation.npy", crosscor)
