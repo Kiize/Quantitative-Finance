@@ -87,6 +87,7 @@ for i in range(N):
 np.save("data/cross_correlation.npy", crosscor)
 np.save("data/normalized_return.npy", retunorm)
 np.save("data/indici.npy", index)
+np.save("data/return.npy", return1d)
 
 mins = (time.time()-start)//60
 sec  = (time.time()-start) % 60
