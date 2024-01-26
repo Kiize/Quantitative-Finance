@@ -326,7 +326,7 @@ if __name__ == '__main__':
     data = data[data > 0].dropna(how='all')
     
     data.to_csv('data/portfolios.csv', index=True)
-    #print(frontier_vol, frontier_ret)
+    
     #==============================================================================
     # Plot Efficiet frontier
     #==============================================================================
