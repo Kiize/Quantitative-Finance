@@ -1,9 +1,18 @@
+"""
+The purpose of the code is to calculate the efficient frontier in
+the profit vs risk plan using the Markowitz theory of portfolio optimization.
+To do this, we first compute, always via optimisation, the portfolio associated
+with the maximum Sharpe ratio and then the portfolio associated with the minimum
+volatility.
+These two portfolios set the minimum and the maximum return of the efficient frontier.
+So we now minimize volatility with fixed returns. 
+"""
 import numpy as np
 import pandas as pd
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
-days_in_yr = 252    # day of activity
+days_in_yr = 252 # day of activity
 
 #==============================================================================
 # Portfolio creation
@@ -139,8 +148,6 @@ def portfolio_vol(w, returns, ret_cov):
     
     Returns
     -------
-    mean_prt : float
-        mean of portfolio return
     devs_prt : float
         standard deviation of portfolio 
     '''
@@ -238,11 +245,11 @@ def get_result(returns, ret_cov, ticker, N_P=20, risk_free_rate=0.):
     
     Returns
     -------
-    ret_prt_sr : float
-        return of the portfolio for maximum sharpe ratio
-    vol_prt_sr : float
-        volatility of the portfolio for maximum sharpe ratio
-    sr_data : pandas DataFrame
+    frontier_vol : 1darray
+        result of optimizzation for volatility (x-axis)
+    target : 1darray
+        return that we want for our potfolio (y-axis)
+    data : pandas DataFrame
         DataFrame with optimal weights and associated ticker
     '''
     
@@ -292,7 +299,7 @@ if __name__ == '__main__':
     list_tk = np.load('data/indici_2.npy', allow_pickle='TRUE')
     list_tk = list_tk[0:n_asset]
 
-    return_1d = np.load('data/normalized_return_2.npy', allow_pickle='TRUE')
+    return_1d = np.load('data/return_2.npy', allow_pickle='TRUE')
     return_1d = return_1d[0:n_asset, 0:n_days]
 
     cross_corr = np.cov(return_1d)
@@ -310,9 +317,12 @@ if __name__ == '__main__':
 
     return_1d = []
     for i, ticker in enumerate(list_tk):
-        # Compute the normalized return to 1 day
+        # Compute the return to 1 day
         adj_close = history[ticker]['Adj Close']
         return_1d.append(adj_close.pct_change()[1:])
+        # normalizzation
+        #sig = np.sqrt(np.mean(return_1d[i]**2)-np.mean(return_1d[i])**2)
+        #return_1d[i] = (return_1d[i] - np.mean(return_1d[i]))/sig 
 
     return_1d  = np.array(return_1d)
     cross_corr = np.cov(return_1d)
@@ -343,7 +353,7 @@ if __name__ == '__main__':
     sr = ret/vol # sharpe ratio
 
     plt.figure(1)
-    plt.plot(frontier_vol, frontier_ret, "r-", label="Efficent frontier")
+    plt.plot(frontier_vol,     frontier_ret,     "r-", label="Efficent frontier")
     plt.plot(frontier_vol[0],  frontier_ret[0],  "bo", label="Minimum volatility")
     plt.plot(frontier_vol[-1], frontier_ret[-1], "ko", label="Maximum sharpe ratio")
     
