@@ -120,17 +120,17 @@ def load(start_date, end_date, list_ticker=None, json_link=None,
         if save:
             np.save(path_data, history)
         else:
-            return histoty
+            return history
 
 
 if __name__ == "__main__":
 
     sp500 = r"https://pkgstore.datahub.io/core/s-and-p-500-companies/10/datapackage.json"
-    path_file = r"data/dataset_2"
-    path_info = r"data/dataset_information_2"
+    path_file = r"data/2023"
+    path_info = r"data/2023_information"
 
     start = time.time()
-    start_date = "2020-01-01"
+    start_date = "2023-01-01"
     end_date   = "2023-12-31"
 
     load(start_date, end_date, json_link=sp500, 
