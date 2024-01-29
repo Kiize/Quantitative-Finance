@@ -17,6 +17,46 @@ class Portfolio:
     '''
     Class to create optimal portfolio according
     Markowitz theory of portfolio optimization
+    
+    Example
+    -------
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    from build_dataset import load
+    from efficient_portfolio import Portfolio
+
+    days_in_yr  = 252    # day of activity
+    start_date  = "2020-01-01"
+    end_date    = "2023-12-31"
+
+    list_tk = ["^GSPC", "AAPL", "^IXIC", "EBAY"]
+    history = load(start_date, end_date, list_ticker=list_tk)
+
+    return_1d = []
+    for i, ticker in enumerate(list_tk):
+        # Compute the return to 1 day
+        adj_close = history[ticker]['Adj Close']
+        return_1d.append(adj_close.pct_change()[1:])
+
+    return_1d  = np.array(return_1d)
+    cross_corr = np.cov(return_1d)
+
+    portfolio = Portfolio(return_1d, cross_corr, list_tk, days_in_yr=days_in_yr)
+    frontier_vol, frontier_ret, data = portfolio.optimization(20)
+    data = data[data > 0].dropna(how='all')
+
+    data.to_csv('data/portfolios.csv', index=True)
+
+    plt.figure(1)
+    plt.plot(frontier_vol,     frontier_ret,     "r-", label="Efficent frontier")
+    plt.plot(frontier_vol[0],  frontier_ret[0],  "bo", label="Minimum volatility")
+    plt.plot(frontier_vol[-1], frontier_ret[-1], "ko", label="Maximum sharpe ratio")
+    plt.title("Portfolio optimizzation", fontsize=10)
+    plt.xlabel('Volatility %', fontsize=10)
+    plt.ylabel('Return %', fontsize=10)
+    plt.legend(loc='best')
+    plt.show()
     '''
 
     def __init__(self, returns, ret_cov, ticker, risk_free_rate=0, days_in_yr=252):
@@ -257,7 +297,7 @@ if __name__ == '__main__':
     # Computation
     #==============================================================================
 
-    portfolio = Portfolio(return_1d, cross_corr, list_tk)
+    portfolio = Portfolio(return_1d, cross_corr, list_tk, days_in_yr=days_in_yr)
     frontier_vol, frontier_ret, data = portfolio.optimization(20)
     data = data[data > 0].dropna(how='all')
 
