@@ -24,6 +24,8 @@ norm_corr_2022 = np.load('data/norm_correlation_2022.npy', allow_pickle='TRUE')
 norm_corr_2022 = norm_corr_2022[0:n_asset, 0:n_asset]
 
 filt_corr_2022 = ut.c_filtering(cross_corr_2022, return_1d_2022)
+filt_norm_corr_2022 = ut.c_filtering(norm_corr_2022, return_1d_2022)
+
 
 sigma_2022 = np.zeros(n_asset)
 
@@ -33,6 +35,8 @@ for i in range(n_asset):
 cross_corr_2022 = ut.q_operator(cross_corr_2022, sigma_2022) 
 norm_corr_2022 = ut.q_operator(norm_corr_2022, sigma_2022)
 filt_corr_2022 = ut.q_operator(filt_corr_2022, sigma_2022)
+filt_norm_corr_2022 = ut.q_operator(filt_norm_corr_2022, sigma_2022)
+
 
 # 2023.
 
@@ -49,6 +53,8 @@ norm_corr_2023 = np.load('data/norm_correlation_2023.npy', allow_pickle='TRUE')
 norm_corr_2023 = norm_corr_2023[0:n_asset, 0:n_asset]
 
 filt_corr_2023 = ut.c_filtering(cross_corr_2023, return_1d_2023)
+filt_norm_corr_2023 = ut.c_filtering(norm_corr_2023, return_1d_2023)
+
 
 
 sigma_2023 = np.zeros(n_asset)
@@ -59,6 +65,8 @@ for i in range(n_asset):
 cross_corr_2023 = ut.q_operator(cross_corr_2023, sigma_2023)
 norm_corr_2023 = ut.q_operator(norm_corr_2023, sigma_2023)
 filt_corr_2023 = ut.q_operator(filt_corr_2023, sigma_2023)
+filt_norm_corr_2023 = ut.q_operator(filt_norm_corr_2023, sigma_2023)
+
 
 
 # Portfolio with cross_correlation.
@@ -84,6 +92,14 @@ portfolio_2023_pred_filt = Portfolio(return_1d_2023, filt_corr_2022, list_tk_202
 
 vol_pred_filt, ret_pred_filt, _ = portfolio_2023_pred_filt.optimization(20)
 vol_real_filt, ret_real_filt, _ = portfolio_2023_real_filt.optimization(20)
+
+# Portfolio with filtered normalized correlation.
+
+portfolio_2023_real_filt_norm = Portfolio(return_1d_2023, filt_norm_corr_2023, list_tk_2023)
+portfolio_2023_pred_filt_norm = Portfolio(return_1d_2023, filt_norm_corr_2022, list_tk_2023)
+
+vol_pred_filt_norm, ret_pred_filt_norm, _ = portfolio_2023_pred_filt_norm.optimization(20)
+vol_real_filt_norm, ret_real_filt_norm, _ = portfolio_2023_real_filt_norm.optimization(20)
 
 
 # Elapsed time.
@@ -133,14 +149,14 @@ plt.xlabel('Volatility %', fontsize=10)
 plt.ylabel('Return %', fontsize=10)
 plt.legend(loc='best')
 
-# Plot cross and filt.
+# Plot filtered norm.
 
 plt.figure(4)
-plt.plot(vol_pred_filt, ret_pred_filt, "r-", label="Predicted")
-plt.plot(vol_real, ret_real, "b-", label="Realized")
+plt.plot(vol_pred_filt_norm, ret_pred_filt_norm, "r-", label="Predicted")
+plt.plot(vol_real_filt_norm, ret_real_filt_norm, "b-", label="Realized")
 
 
-plt.title("Portfolio optimization with cross realized and filtered prediction", fontsize=10)
+plt.title("Portfolio optimization with filtered normalized correlation", fontsize=10)
 plt.xlabel('Volatility %', fontsize=10)
 plt.ylabel('Return %', fontsize=10)
 plt.legend(loc='best')

@@ -233,7 +233,7 @@ def c_filtering(C, return_arr):
     lambda_eig = np.diag(tmp_eig)
     lambda_eig_inv = np.diag(tmp_eig_inv)
 
-    C_filtered = lambda_eig @ C @ lambda_eig_inv
+    C_filtered = lambda_eig @ eigvec @ lambda_eig_inv
 
     # We keep the trace conserved.
         
