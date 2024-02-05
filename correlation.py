@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 
 start = time.time()
 
-start_story = "2023-01-01" # Start date for stock histories
-end_story   = "2023-12-31" # End   date for stock histories
+start_story = "2022-01-01" # Start date for stock histories
+end_story   = "2022-12-31" # End   date for stock histories
 
 # Read SP500
 print('read SP500 history')
@@ -18,7 +18,7 @@ SP500 = yf.download('^GSPC', start=start_story, end=end_story, interval='1d', pr
 L = len(SP500)
 
 # Read the data created via: build_datset.py
-history = np.load(r"data/2023.npy",allow_pickle='TRUE').item()
+history = np.load(r"data/2022.npy",allow_pickle='TRUE').item()
 
 # Some titles may have been 'born' during the period of time
 # considered and are therefore excluded from the analysis
@@ -74,10 +74,10 @@ for i, ticker in enumerate(index):
 cross_corr       = np.cov(return_norm)
 cross_corr_shuff = np.cov(ret_norm_shuff)
 
-np.save("data/cross_correlation_2023.npy", cross_corr)
-np.save("data/normalized_return_2023.npy", return_norm)
-np.save("data/return_2023.npy", return_1d)
-np.save("data/indici_2023.npy", index)
+np.save("data/cross_correlation_2022.npy", cross_corr)
+np.save("data/normalized_return_2022.npy", return_norm)
+np.save("data/return_2022.npy", return_1d)
+np.save("data/indici_2022.npy", index)
 
 mins = (time.time()-start)//60
 sec  = (time.time()-start) % 60

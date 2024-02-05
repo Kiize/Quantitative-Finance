@@ -1,28 +1,31 @@
 """
-Codice contenente tutte le funzioni necessarie
+Code with some usefull functions
 """
 
 import numpy as np
 
+
 def dens_prob(L, N):
     """
-    funzione che restituisce la distribuzione
-    degli autovalori di una matrice random
-    nel limite di N ed L infiniti.
-
+    Function that returns the distribution of
+    random matrix's eigenvalues in the limit
+    of large N and L.
+    A random matrix R is defined as: R = 1/L A.T@A
+    where A is np.random.randn(N,L).
     Parameters
     ----------
     L, N : int
-       Parametri della matrice
-
+       parameters of matrix
     Returns
-    ----------
-    dic : dict
-        dizionario contenete : {'supporto': l, 'pdf': P}
-        l : 1darray
-            array del supporto della distribuzione
-        P : 1darray
-            array che contiene La distribuzione
+    -------
+    l, P : array
+        l is an array for plot and P is the distribution
+
+    Example
+    -------
+    x, y = dens_prob(1000, 500)
+    plt.plot(x, y)
+
     """
     q = L/N
 
@@ -33,187 +36,83 @@ def dens_prob(L, N):
     l = np.linspace(l1, l2, 1000)
     P = (q/(2*np.pi) * np.sqrt((l2-l)*(l-l1)))/l
 
-    dic = {'supporto': l, 'pdf': P}
-    return dic
+    return l, P
 
 
-def corr(x, y):
+def pro(retunorm, eigvec, k):
     """
-    funzione che dati due array x(t) y(t)
-    ne calcola la correlazione temporale
-
-    Parameters
-    ----------
-    x : 1darray
-        array contenente l'andamento temporale di x
-    y : 1darray
-        array contenente l'andamento temporale di y
-
-    Returns
-    ----------
-    corr : floar
-        correlazione dei due array
-    """
-    sigmaxy = ((x - np.mean(x))*(y -  np.mean(y))).sum()
-    sigmax = np.sqrt(((x - np.mean(x))**2).sum())
-    sigmay = np.sqrt(((y - np.mean(y))**2).sum())
-    corr = sigmaxy/(sigmax*sigmay)
-
-    return corr
-
-
-def pro(retunorm, eigvec, k, L, N):
-    """
-    Calcolo della proiezione delle serie
-    temporali sul k-esimo autovettore
-
+    Function to compute the projection of temporal series
+    over the k-th eigenvalue of cross-correlation
     Parameters
     ----------
     retunorm : 2darray
-        matrice contenenete i ritorni degli indici
+        matrix with all return (normalized)
     eigvec : 2darray
-        matrice contenete gli autovettori
+        matrix of eigvectors of cross-correlation
     k : int
-        numero che labella gli autovettori
-    L : int
-        lunghezza serie temporale
-    N : int
-        numero di titoli
-
+        index of eigvectors
     Returns
     ----------
     pro : 1darray
-        array contenente la proiezione delle serie
-        temporali dei titoli sull'autovettore k-esimo
+        array containing the projection of the temporal
+        series of the titles on the k-th eigenvector
     """
 
-    pro = np.zeros(L)
+    N, L = retunorm.shape
+    pro  = np.zeros(L)
+
     for j in range(L):
         a = 0
         for i in range(N):
             a += retunorm[i, j]*eigvec[i, k]
         pro[j] = a
 
+    # normalizzation
     pro = pro/np.sqrt(np.mean(pro**2)-np.mean(pro)**2)
 
     return pro
 
 
-def I(N, v):
-    """
-    funzione che restituisce
-    l'inverse participation ratio
-
-    Parameters
-    ----------
-    N : int
-        numero dei titloi
-    v : 2darray
-        matrice che contiene gli autovettori
-    """
-
-    I = np.zeros(N)
-
-    for i in range(N):
-        a = 0
-        #sommo le componenti degli array alla quarta
-        for j in range(N):
-            a += v[j, i]**4
-        I[i] = a
-
-    return I
-
-
-def find_max(x, k):
-    """
-    funzione che trova gli indici dei primi k massimi,
-    in realtà si vogliono i picchi più ampi sia positivi
-    che negativi, facendo abs(x) tutto si traduce nel
-    trovare i massimi maggiori
-
-    Parameters
-    ----------
-    x : 1darray
-        array di cui trovare i massimi
-    k : int
-        numero di massimi da trovare
-
-    Returns
-    ----------
-    index : 1darray
-        array degli indici dei k massimi,
-        oridnati in maniera decrescente
-    """
-
-    #uso la funzione copy per non modificare l'array originarioi
-    v = x.copy()
-    v = np.abs(v)
-    index = np.zeros(k)
-    #trovo il primo massimo e conservo l'indice
-    max = np.max(v)
-    ind = np.where(v == max)[0][0]
-    index[0] = ind
-    #tolgo l'elemento trovato per poter iterare
-    v = np.delete(v, ind)
-
-    for i in range(1, k):
-        max = np.max(v)
-        ind = np.where(v == max)[0][0]
-        if ind < index[i-1]:
-            index[i] = ind
-        else:
-            index[i] = ind + i
-        v = np.delete(v, ind)
-
-    return index
-
-
-def find_info(data_info, ticker):
-    """
-    funzione che dato il dataframe dei titoli
-    trova il simbolo e restituisce le informazioni
-    del titolo contenute del dataframe in forma
-    di una tabella con la sintassi di latex
-    in modo da poter copiare il risultato su latex
-
-    Parameters
-    ----------
-    data_info : pandas data frame
-        tabella contenenete simbolli, nomi e settori
-    ticker : list
-        lista dei ticker da rintracciare nel dataframe
-        per ricavare nome del titolo e settore
-    """
-
-    #stampo su shell con sintassi latex
-    print('\hline')
-    print(r'Symbol & Name & Sector \\')
-    #ciclo su tutti i tioli
-    for tk in ticker:
-
-        #trovo il simbolo e conservo l'indice
-        ind = np.where(data_info['Symbol']==tk)[0][0]
-
-        #trovo nome e settore del relativo indice
-        name = data_info['Name'][ind]
-        sect = data_info['Sector'][ind]
-
-        #stampo su shell con sintassi latex
-        print('\hline')
-        print(rf'{tk} & {name} &  {sect} \\')
-    print('\hline')
-
 def q_operator(C, sigma):
-    n = len(sigma)
-    Q = np.zeros((n, n))
+    """
+    Function to reweight the correlation matrix with volatilities.
+    This is because the cross correlation is calculated with normalized returns.
 
-    for i in range(n):
-        for j in range(n):
-            Q[i, j] = C[i, j]*sigma[i]*sigma[j]
+    Parameters
+    ----------
+    C : 2darray
+        cross correlation matrix
+    sigma : 1d array
+        volatility of each index
+
+    Return
+    ------
+    Q : 2darray
+        Q = \sum_i \sum_j C_ij s_i s_j
+    """
+    n = len(sigma)
+
+    Q = [[C[i, j]*sigma[i]*sigma[j] for i in range(n)] for j in range(n)]
+    Q = np.array(Q)
 
     return Q    
 
+
 def c_filtering(C, return_arr):
+    """
+    Function to compute the filtered correlation matrix
+    using the information of the greater of the greater eigenvalues.
+
+    C : 2darray
+        cross correlation matrix
+    return_arr : 2darray
+        matrix of all return
+
+    Returns
+    -------
+    C_filtered : 2darray
+        filtered matrix with the information of bigger eigenvalues
+    """
     # C filtering.
     n_asset = len(return_arr[:,0])
 
@@ -236,7 +135,6 @@ def c_filtering(C, return_arr):
     C_filtered = lambda_eig @ eigvec @ lambda_eig_inv
 
     # We keep the trace conserved.
-        
     for i in range(n_asset):
         C_filtered[i, i] = 1
 
