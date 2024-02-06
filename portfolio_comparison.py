@@ -1,13 +1,13 @@
 import time 
 import numpy as np
 import matplotlib.pyplot as plt
-from efficient_frontier import Portfolio
 
+from efficient_frontier import Portfolio
 import utilities as ut
 
 start = time.time()
 
-n_asset    = 50   # number of asset in our portfolio (max 431 for return_2.npy)
+n_asset = 50   # number of asset in our portfolio (max 431 for return_2.npy)
 
 # 2022.
 
@@ -27,12 +27,10 @@ filt_corr_2022 = ut.c_filtering(cross_corr_2022, return_1d_2022)
 filt_norm_corr_2022 = ut.c_filtering(norm_corr_2022, return_1d_2022)
 
 
-sigma_2022 = np.zeros(n_asset)
+sigma_2022 = np.array([np.sqrt(np.mean(return_1d_2022[i, :]**2)-np.mean(return_1d_2022[i, :])**2) for i in range(n_asset)])
 
-for i in range(n_asset):
-    sigma_2022[i] = np.sqrt(np.mean(return_1d_2022[i, :]**2)-np.mean(return_1d_2022[i, :])**2)
 
-cross_corr_2022 = ut.q_operator(cross_corr_2022, sigma_2022) 
+cross_corr_2022 = ut.q_operator(cross_corr_2022, sigma_2022)
 norm_corr_2022 = ut.q_operator(norm_corr_2022, sigma_2022)
 filt_corr_2022 = ut.q_operator(filt_corr_2022, sigma_2022)
 filt_norm_corr_2022 = ut.q_operator(filt_norm_corr_2022, sigma_2022)
@@ -55,12 +53,7 @@ norm_corr_2023 = norm_corr_2023[0:n_asset, 0:n_asset]
 filt_corr_2023 = ut.c_filtering(cross_corr_2023, return_1d_2023)
 filt_norm_corr_2023 = ut.c_filtering(norm_corr_2023, return_1d_2023)
 
-
-
-sigma_2023 = np.zeros(n_asset)
-
-for i in range(n_asset):
-    sigma_2023[i] = np.sqrt(np.mean(return_1d_2023[i, :]**2)-np.mean(return_1d_2023[i, :])**2)
+sigma_2023 = np.array([np.sqrt(np.mean(return_1d_2023[i, :]**2)-np.mean(return_1d_2023[i, :])**2) for i in range(n_asset)])
 
 cross_corr_2023 = ut.q_operator(cross_corr_2023, sigma_2023)
 norm_corr_2023 = ut.q_operator(norm_corr_2023, sigma_2023)
@@ -118,47 +111,34 @@ print(f"Elapsed time: {mins} min {sec:.2f} sec")
 plt.figure(1)
 plt.plot(vol_pred, ret_pred, "r-", label="Predicted")
 plt.plot(vol_real, ret_real, "b-", label="Realized")
-
-
-plt.title("Portfolio optimization with cross correlation", fontsize=10)
-plt.xlabel('Volatility %', fontsize=10)
-plt.ylabel('Return %', fontsize=10)
+#plt.title("Portfolio optimization with cross correlation", fontsize=10)
+#plt.xlabel('Volatility %', fontsize=10)
+#plt.ylabel('Return %', fontsize=10)
+plt.legend(loc='best')
+# Plot filtered.
+plt.plot(vol_pred_filt, ret_pred_filt, "r--", label="Predicted filtered")
+plt.plot(vol_real_filt, ret_real_filt, "b--", label="Realized filtered")
+#plt.title("Portfolio optimization with filtered correlation", fontsize=10)
+#plt.xlabel('Volatility %', fontsize=10)
+#plt.ylabel('Return %', fontsize=10)
 plt.legend(loc='best')
 
-# Plot norm.
 
+# Plot norm.
 plt.figure(2)
 plt.plot(vol_pred_norm, ret_pred_norm, "r-", label="Predicted")
 plt.plot(vol_real_norm, ret_real_norm, "b-", label="Realized")
-
-
-plt.title("Portfolio optimization with normalized correlation", fontsize=10)
-plt.xlabel('Volatility %', fontsize=10)
-plt.ylabel('Return %', fontsize=10)
-plt.legend(loc='best')
-
-# Plot filtered.
-
-plt.figure(3)
-plt.plot(vol_pred_filt, ret_pred_filt, "r-", label="Predicted")
-plt.plot(vol_real_filt, ret_real_filt, "b-", label="Realized")
-
-
-plt.title("Portfolio optimization with filtered correlation", fontsize=10)
-plt.xlabel('Volatility %', fontsize=10)
-plt.ylabel('Return %', fontsize=10)
+#plt.title("Portfolio optimization with normalized correlation", fontsize=10)
+#plt.xlabel('Volatility %', fontsize=10)
+#plt.ylabel('Return %', fontsize=10)
 plt.legend(loc='best')
 
 # Plot filtered norm.
-
-plt.figure(4)
-plt.plot(vol_pred_filt_norm, ret_pred_filt_norm, "r-", label="Predicted")
-plt.plot(vol_real_filt_norm, ret_real_filt_norm, "b-", label="Realized")
-
-
-plt.title("Portfolio optimization with filtered normalized correlation", fontsize=10)
-plt.xlabel('Volatility %', fontsize=10)
-plt.ylabel('Return %', fontsize=10)
+plt.plot(vol_pred_filt_norm, ret_pred_filt_norm, "r--", label="Predicted filtered")
+plt.plot(vol_real_filt_norm, ret_real_filt_norm, "b--", label="Realized filtered")
+#plt.title("Portfolio optimization with filtered normalized correlation", fontsize=10)
+#plt.xlabel('Volatility %', fontsize=10)
+#plt.ylabel('Return %', fontsize=10)
 plt.legend(loc='best')
 
 plt.show()   

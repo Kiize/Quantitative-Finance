@@ -114,25 +114,28 @@ def c_filtering(C, return_arr):
         filtered matrix with the information of bigger eigenvalues
     """
     # C filtering.
-    n_asset = len(return_arr[:,0])
+    n_asset, L = return_arr.shape
 
     eigval, eigvec = np.linalg.eig(C)
     eigvals = np.sort(eigval)   
-    eigvec = eigvec[:, eigval.argsort()]
+    eigvecs = eigvec[:, eigval.argsort()]
 
-    q = len(return_arr[0,:])/n_asset
+    q = L/n_asset
 
     #limiti del supporto
-    #l1 = 1 + 1/q - 2*np.sqrt(1/q)
     l2 = 1 + 1/q + 2*np.sqrt(1/q)
 
     tmp = eigvals[eigvals > l2]
-    tmp_eig = np.append(np.zeros(n_asset - len(tmp)), tmp)
+
+    tmp_eig     = np.append(np.zeros(n_asset - len(tmp)), tmp)
     tmp_eig_inv = np.append(np.zeros(n_asset - len(tmp)), 1/tmp)
-    lambda_eig = np.diag(tmp_eig)
+
+    lambda_eig     = np.diag(tmp_eig)
     lambda_eig_inv = np.diag(tmp_eig_inv)
 
-    C_filtered = lambda_eig @ eigvec @ lambda_eig_inv
+    #C_filtered = lambda_eig @ eigvecs @ lambda_eig_inv
+    #C_filtered = lambda_eig_inv @ C @ lambda_eig
+    C_filtered = eigvecs @ lambda_eig @ eigvecs.T
 
     # We keep the trace conserved.
     for i in range(n_asset):

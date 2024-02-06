@@ -9,8 +9,8 @@ from scipy.optimize import curve_fit
 import utilities as ut
 
 #leggo le matrici calcolate nel file Correlation.py
-crosscor = np.load(r"data/cross_correlation_2022.npy",allow_pickle='TRUE')
-retunorm = np.load(r"data/normalized_return_2022.npy",allow_pickle='TRUE')
+crosscor = np.load(r"data/cross_correlation_2023.npy",allow_pickle='TRUE')
+retunorm = np.load(r"data/normalized_return_2023.npy",allow_pickle='TRUE')
 
 """
 calcolo autovettori e autovalori
@@ -24,7 +24,7 @@ eigvecs = eigvec[:,eigval.argsort()]
 N = len(eigvals)
 L = retunorm.shape[1]
 
-M = ut.pro(retunorm, eigvecs, N-1, L, N)
+M = ut.pro(retunorm, eigvecs, N-1)
 
 
 def f(x, b, c):
@@ -59,13 +59,10 @@ correps = np.cov(epsilon)
 
 
 #prob dens func nel limite, N, L infiniti
-P = ut.dens_prob(L, N)
-sup = P['supporto']
-pdf = P['pdf']
-
+sup, pdf = ut.dens_prob(L, N)
 
 #salvo la matrice rinormalizzata
-np.save("data/norm_correlation_2022.npy", correps)
+np.save("data/norm_correlation_2023.npy", correps)
 
 plt.figure(1)
 x = np.reshape(correps, N*N)

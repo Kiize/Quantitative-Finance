@@ -247,6 +247,7 @@ class Portfolio:
             # Store data
             frontier_vol[i+1] = tmp['fun']
             data[f"{i+1}"] = [round(j*100, 2) for j in tmp['x']]
+            print(f"{(i+1)/(N_P-2) * 100:.2f} % \r", end='')
 
         frontier_vol, target = 100*frontier_vol, 100*target
 
