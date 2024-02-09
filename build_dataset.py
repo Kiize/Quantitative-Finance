@@ -126,12 +126,12 @@ def load(start_date, end_date, list_ticker=None, json_link=None,
 if __name__ == "__main__":
 
     sp500 = r"https://pkgstore.datahub.io/core/s-and-p-500-companies/10/datapackage.json"
-    path_file = r"data/2022"
-    path_info = r"data/2022_information"
+    path_file = r"data/16_19"
+    path_info = r"data/16_19_information"
 
     start = time.time()
-    start_date = "2022-01-01"
-    end_date   = "2022-12-31"
+    start_date = "2016-01-01"
+    end_date   = "2019-12-31"
 
     load(start_date, end_date, json_link=sp500, 
          save=True, path_data=path_file, path_info=path_info)

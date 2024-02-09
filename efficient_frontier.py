@@ -157,7 +157,7 @@ class Portfolio:
         '''
 
         ret_prt, vol_prt = self.tot_portfolio(w)
-        sharpe_ratio = (ret_prt - self.risk_free_rate)/vol_prt 
+        sharpe_ratio = (ret_prt - self.risk_free_rate*self.days_in_yr)/vol_prt
 
         return -sharpe_ratio
 
@@ -193,7 +193,7 @@ class Portfolio:
         init = n * [1 / n]
         # minimizzation
         result = opt.minimize(f, init, args=args, bounds=bounds,
-                              constraints=constraints)
+                              method='SLSQP', constraints=constraints)
         return result
 
 
@@ -261,14 +261,14 @@ if __name__ == '__main__':
     # Pre-loaded data
     #==============================================================================
     """
-    n_asset    = 5   # number of asset in our portfolio (max 431 for return_2.npy)
-    n_days     = 1006   # number of day (max 1005 for return_2.npy)
+    n_asset    = 4   # number of asset in our portfolio (max 431 for return.npy)
+    n_days     = 1006   # number of day (max 1005 for return.npy)
     days_in_yr = 252
     
-    list_tk = np.load('data/indici_2.npy', allow_pickle='TRUE')
+    list_tk = np.load('data/indici.npy', allow_pickle='TRUE')
     list_tk = list_tk[0:n_asset]
 
-    return_1d = np.load('data/return_2.npy', allow_pickle='TRUE')
+    return_1d = np.load('data/return.npy', allow_pickle='TRUE')
     return_1d = return_1d[0:n_asset, 0:n_days]
 
     cross_corr = np.cov(return_1d)
@@ -281,6 +281,7 @@ if __name__ == '__main__':
     start_date  = "2020-01-01"
     end_date    = "2023-12-31"
 
+    #list_tk = ['AAPL','GOOG','AMZN','EBAY']
     list_tk = ["^GSPC", "AAPL", "^IXIC", "EBAY"]
     history = load(start_date, end_date, list_ticker=list_tk)
 
