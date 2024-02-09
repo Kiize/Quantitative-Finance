@@ -125,16 +125,10 @@ def c_filtering(C, return_arr):
     #limiti del supporto
     l2 = 1 + 1/q + 2*np.sqrt(1/q)
 
-    tmp = eigvals[eigvals > l2]
+    tmp        = eigvals[eigvals > l2]
+    tmp_eig    = np.append(np.zeros(n_asset - len(tmp)), tmp)
+    lambda_eig = np.diag(tmp_eig)
 
-    tmp_eig     = np.append(np.zeros(n_asset - len(tmp)), tmp)
-    tmp_eig_inv = np.append(np.zeros(n_asset - len(tmp)), 1/tmp)
-
-    lambda_eig     = np.diag(tmp_eig)
-    lambda_eig_inv = np.diag(tmp_eig_inv)
-
-    #C_filtered = lambda_eig @ eigvecs @ lambda_eig_inv
-    #C_filtered = lambda_eig_inv @ C @ lambda_eig
     C_filtered = eigvecs @ lambda_eig @ eigvecs.T
 
     # We keep the trace conserved.
