@@ -225,9 +225,12 @@ class Portfolio:
         # Maximization of sharpe ratio
         result_sr = self.minimum(self.negative_sharpe_ratio, constraints)
         ret_prt_sr, vol_prt_sr = self.tot_portfolio(result_sr['x'])
+        print("Maximization of sharpe ratio done")
+
         # Minimization of volatility
         result_mv = self.minimum(self.vol_portfolio, constraints)
         ret_prt_mv, vol_prt_mv = self.tot_portfolio(result_mv['x'])
+        print("Minimization of volatility done")
 
         # Store data
         frontier_vol[ 0] = vol_prt_mv 
@@ -244,9 +247,11 @@ class Portfolio:
             constraints = ({'type': 'eq', 'fun': lambda w: np.sum(w) - 1.},
                            {'type': 'eq', 'fun': lambda w: self.ret_portfolio(w) - t})
             tmp = self.minimum(self.vol_portfolio, constraints)
+
             # Store data
             frontier_vol[i+1] = tmp['fun']
             data[f"{i+1}"] = [round(j*100, 2) for j in tmp['x']]
+
             print(f"{(i+1)/(N_P-2) * 100:.2f} % \r", end='')
 
         frontier_vol, target = 100*frontier_vol, 100*target
